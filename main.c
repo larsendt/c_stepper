@@ -4,14 +4,14 @@
 
 int main(void) {
     stepper_control s;
-    start_stepper_thread(&s);
-    s.enabled = 1;
-
-    for(int i = 0; i < 5; i++) {
-        printf("sleep %d\n", i);
-        sleep(1);
+    stepper_init(&s, 31, 30, 48, 51, 15);
+    
+    int dir = 0;
+    for(int i = 0; i < 4; i++) {
+        stepper_rot(&s, 180, dir, 10, US_SIXTEENTH);
+        dir = !dir;
     }
 
-    stop_stepper_thread(&s);
+    stepper_destroy(&s);
     return 0;
 }

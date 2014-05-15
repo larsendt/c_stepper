@@ -1,16 +1,28 @@
 #ifndef _STEPPER_H_
 #define _STEPPER_H_
 
-#include <pthread.h>
+#include "gpio.h"
+
+typedef enum stepper_microstep {
+    US_FULL = 0,
+    US_HALF = 1,
+    US_QUARTER = 2,
+    US_EIGHTH = 3,
+    US_SIXTEENTH = 7,
+} stepper_microstep;
+
 
 typedef struct stepper_control {
-    int dir;
-    int enabled;
-    int has_error;
-    pthread_t thread_handle;
+    gpio step_g;
+    gpio dir_g;
+    gpio m1_g;
+    gpio m2_g;
+    gpio m3_g;
 } stepper_control;
 
-void start_stepper_thread(stepper_control *s);
-void stop_stepper_thread(stepper_control *s);
+int stepper_init(stepper_control *s, int step_pin, int dir_pin, int m1_pin, int m2_pin, int m3_pin);
+void stepper_destroy(stepper_control *s);
+
+void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microstep ustep);
 
 #endif
