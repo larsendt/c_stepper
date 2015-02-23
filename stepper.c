@@ -53,10 +53,29 @@ void stepper_destroy(stepper_control *s) {
 
 
 void step_sleep(int us) {
-    struct timespec sleepval;
-    sleepval.tv_sec = 0;
-    sleepval.tv_nsec = us * 1000;
-    nanosleep(&sleepval, NULL);
+    struct timespec loopstart;
+    struct timespec loopstop;
+
+    // For values around 1us, the inner while loop becomes dominated by
+    // the clock_gettime call, so instead we go in increments of 10us. Gives
+    // much better accuracy (down to 10us, of course), but that's good enough
+    // for stepper motors.
+    //
+    // Error stats (avg of 100-100000 iterations, depending on how long I feel 
+    //              like measuring for):
+    // 100ms: +2.45% of expected
+    // 10ms: +1.95%
+    // 1ms: +3.70%
+    // 100us: +8.89%
+    // 10us: +6.39%
+    // 1us: +205% <- things kinda fall apart here
+    for(int i = 0; i < (us/10); i++) {
+        clock_gettime(CLOCK_REALTIME, &loopstart);
+        clock_gettime(CLOCK_REALTIME, &loopstop);
+        while(tdiff(loopstart, loopstop) < 0.00001) {
+            clock_gettime(CLOCK_REALTIME, &loopstop);
+        }
+    }
 }
 
 
