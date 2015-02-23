@@ -46,6 +46,9 @@ int stepper_init(stepper_control *s, int step_pin, int dir_pin, int m1_pin, int 
 void stepper_destroy(stepper_control *s) {
     gpio_term(&(s->step_g));
     gpio_term(&(s->dir_g));
+    gpio_term(&(s->m1_g));
+    gpio_term(&(s->m2_g));
+    gpio_term(&(s->m3_g));
 }
 
 
