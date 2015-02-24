@@ -6,6 +6,7 @@
 #define STEPS_PER_DEG (400.0 / 360.0)
 #define deg_to_step(deg) ((int)(STEPS_PER_DEG * deg))
 #define rpm_to_usdelay(rpm, rev_steps) ((int)((60000000.0 / rpm) / (double)rev_steps))
+#define tdiff(start, stop) ((stop.tv_sec - start.tv_sec) + ((stop.tv_nsec - start.tv_nsec) / 1e9))
 
 int stepper_init(stepper_control *s, int step_pin, int dir_pin, int m1_pin, int m2_pin, int m3_pin) {
     int ok;
