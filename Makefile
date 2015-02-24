@@ -1,4 +1,4 @@
-CFLAGS = -Wall -g -std=gnu99 -pthread
+CFLAGS = -Wall -g -std=gnu99 -pthread -DSTEPPER_WARNINGS -DGPIO_WARNINGS
 LIBS = -lm
 
 all: stepper_control 
