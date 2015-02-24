@@ -22,7 +22,9 @@ typedef struct stepper_control {
 
 int stepper_init(stepper_control *s, int step_pin, int dir_pin, int m1_pin, int m2_pin, int m3_pin);
 void stepper_destroy(stepper_control *s);
-
 void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microstep ustep);
+void stepper_step(stepper_control *s, int steps, int dir, int usdelay, stepper_microstep ustep);
+int stepper_get_usdelay(int rpm, stepper_microstep ustep);
+int stepper_get_steps(int deg, stepper_microstep ustep);
 
 #endif

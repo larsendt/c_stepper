@@ -89,29 +89,42 @@ void step_sleep(int us) {
     }
 }
 
-
-void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microstep ustep) {
-    int needed_steps = deg_to_step(deg);
+int stepper_get_usdelay(int rpm, stepper_microstep ustep) {
     int rev_steps = 400;
     if(ustep == HALF_STEP) { 
-        needed_steps *= 2;
         rev_steps *= 2;  
     } 
     else if(ustep == QUARTER_STEP) { 
-        needed_steps *= 4;
         rev_steps *= 4;
     }
     else if(ustep == EIGHTH_STEP) {
-         needed_steps *= 8;
          rev_steps *= 8;
     }
     else if(ustep == SIXTEENTH_STEP) { 
-        needed_steps *= 16;
         rev_steps *= 16;
     }
 
-    int needed_delay_us = rpm_to_usdelay(rpm, rev_steps) / 2;
+    return rpm_to_usdelay(rpm, rev_steps) / 2;
+}
 
+int stepper_get_steps(int deg, stepper_microstep ustep) {
+    int needed_steps = deg_to_step(deg);
+    if(ustep == HALF_STEP) { 
+        needed_steps *= 2;
+    } 
+    else if(ustep == QUARTER_STEP) { 
+        needed_steps *= 4;
+    }
+    else if(ustep == EIGHTH_STEP) {
+         needed_steps *= 8;
+    }
+    else if(ustep == SIXTEENTH_STEP) { 
+        needed_steps *= 16;
+    }
+    return needed_steps;
+}
+
+void stepper_step(stepper_control *s, int steps, int dir, int usdelay, stepper_microstep ustep) {
     if(dir == 0) {
         gpio_set_value(&(s->dir_g), LOW);
     }
@@ -129,7 +142,7 @@ void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microste
     gpio_set_value(&(s->m3_g), m3);
 
     int on = 0;
-    for(int i = 0; i < needed_steps*2; i++) {
+    for(int i = 0; i < steps*2; i++) {
         if(on) {
             gpio_set_value(&(s->step_g), HIGH);
             on = 0;
@@ -138,7 +151,13 @@ void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microste
             gpio_set_value(&(s->step_g), LOW);
             on = 1;
         }
-        step_sleep(needed_delay_us);
+        step_sleep(usdelay);
     }     
+}
+
+void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microstep ustep) {
+    int needed_delay_us = stepper_get_usdelay(rpm, ustep);
+    int needed_steps = stepper_get_steps(deg, ustep);
+    stepper_step(s, needed_steps, dir, needed_delay_us, ustep);
 }
 
