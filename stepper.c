@@ -11,31 +11,41 @@ int stepper_init(stepper_control *s, int step_pin, int dir_pin, int m1_pin, int 
     int ok;
     ok = gpio_init(&(s->step_g), step_pin, WRITE);
     if(!ok) {
+#ifdef STEPPER_WARNINGS
         fprintf(stderr, "Failed to init step pin (GPIO %d)\n", step_pin);
+#endif
         return 0;
     }
  
     ok = gpio_init(&(s->dir_g), dir_pin, WRITE);
     if(!ok) {
+#ifdef STEPPER_WARNINGS
         fprintf(stderr, "Failed to init dir pin (GPIO %d)\n", dir_pin);
+#endif
         return 0;
     }
 
     ok = gpio_init(&(s->m1_g), m1_pin, WRITE);
     if(!ok) {
+#ifdef STEPPER_WARNINGS
         fprintf(stderr, "Failed to init m1 pin (GPIO %d)\n", m1_pin);
+#endif
         return 0;
     }
 
     ok = gpio_init(&(s->m2_g), m2_pin, WRITE);
     if(!ok) {
+#ifdef STEPPER_WARNINGS
         fprintf(stderr, "Failed to init m2 pin (GPIO %d)\n", m2_pin);
+#endif 
         return 0;
     }
 
     ok = gpio_init(&(s->m3_g), m3_pin, WRITE);
     if(!ok) {
+#ifdef STEPPER_WARNINGS
         fprintf(stderr, "Failed to init m3 pin (GPIO %d)\n", m3_pin);
+#endif
         return 0;
     }
 

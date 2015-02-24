@@ -15,10 +15,17 @@ int gpio_init(gpio *g, int pin, pin_mode mode) {
     char value_path[40];
     sprintf(value_path, VALUE_FILE, pin);
 
+    g->pin = pin;
+    g->f = NULL;
+    g->cur_mode = mode;
+    g->cur_value = LOW;
+    g->open = 0;
+
     FILE *exf = fopen(EXPORT_FILE, "w");
     if(!exf) {
-        fprintf(stderr, "Failed to open export file: %s\n", EXPORT_FILE);
-        fprintf(stderr, "%s\n", strerror(errno));
+#ifdef GPIO_WARNINGS
+        fprintf(stderr, "Failed to open export file: %s (%s)\n", EXPORT_FILE, strerror(errno));
+#endif
         return 0;
     }
 
@@ -28,8 +35,9 @@ int gpio_init(gpio *g, int pin, pin_mode mode) {
 
     FILE *modef = fopen(mode_path, "w");
     if(!modef) {
-        fprintf(stderr, "Failed to open mode file: %s\n", mode_path);
-        fprintf(stderr, "%s\n", strerror(errno));
+#ifdef GPIO_WARNINGS
+        fprintf(stderr, "Failed to open mode file: %s (%s)\n", mode_path, strerror(errno));
+#endif
         return 0;
     }
 
@@ -40,13 +48,14 @@ int gpio_init(gpio *g, int pin, pin_mode mode) {
         fprintf(modef, "out");
     }
     else {
+#ifdef GPIO_WARNINGS
         fprintf(stderr, "Bad GPIO mode: %d\n", mode);
+#endif
         return 0;
     }
 
     fclose(modef);
 
-    g->pin = pin;
     if(mode == READ) {
         g->f = fopen(value_path, "r");
     }
@@ -55,13 +64,12 @@ int gpio_init(gpio *g, int pin, pin_mode mode) {
     }
 
     if(!g->f) {
-        fprintf(stderr, "Failed to open value file: %s\n", value_path);
-        fprintf(stderr, "%s\n", strerror(errno));
+#ifdef GPIO_WARNINGS
+        fprintf(stderr, "Failed to open value file: %s (%s)\n", value_path, strerror(errno));
+#endif
         return 0;
     } 
 
-    g->cur_mode = mode;
-    g->cur_value = LOW;
     g->open = 1;
     return 1;
 }
@@ -79,7 +87,9 @@ int gpio_set_value(gpio *g, pin_value value) {
         fprintf(g->f, "0");
     }
     else {
+#ifdef GPIO_WARNINGS
         fprintf(stderr, "Bad GPIO value: %d\n", value);
+#endif
         return 0;
     }
 
