@@ -12,7 +12,7 @@ int main(void) {
         return 1;
     }
 
-    stepper_rot(&s, 3600, 0, 60, US_FULL);
+    stepper_rot(&s, 3600, 0, 60, FULL_STEP);
     stepper_destroy(&s);
     return 0;
 }

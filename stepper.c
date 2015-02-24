@@ -93,19 +93,19 @@ void step_sleep(int us) {
 void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microstep ustep) {
     int needed_steps = deg_to_step(deg);
     int rev_steps = 400;
-    if(ustep == US_HALF) { 
+    if(ustep == HALF_STEP) { 
         needed_steps *= 2;
         rev_steps *= 2;  
     } 
-    else if(ustep == US_QUARTER) { 
+    else if(ustep == QUARTER_STEP) { 
         needed_steps *= 4;
         rev_steps *= 4;
     }
-    else if(ustep == US_EIGHTH) {
+    else if(ustep == EIGHTH_STEP) {
          needed_steps *= 8;
          rev_steps *= 8;
     }
-    else if(ustep == US_SIXTEENTH) { 
+    else if(ustep == SIXTEENTH_STEP) { 
         needed_steps *= 16;
         rev_steps *= 16;
     }

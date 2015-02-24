@@ -4,11 +4,11 @@
 #include "gpio.h"
 
 typedef enum stepper_microstep {
-    US_FULL = 0,
-    US_HALF = 1,
-    US_QUARTER = 2,
-    US_EIGHTH = 3,
-    US_SIXTEENTH = 7,
+    FULL_STEP = 0,
+    HALF_STEP = 1,
+    QUARTER_STEP = 2,
+    EIGHTH_STEP = 3,
+    SIXTEENTH_STEP = 7,
 } stepper_microstep;
 
 
