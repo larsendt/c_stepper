@@ -89,6 +89,18 @@ void step_sleep(int us) {
     }
 }
 
+void measure_sleep() {
+    struct timespec start;
+    struct timespec stop;
+
+    clock_gettime(CLOCK_REALTIME, &start);
+    for(int i = 0; i < 1000; i++) {
+        step_sleep(1000);
+    }
+    clock_gettime(CLOCK_REALTIME, &stop);
+    printf("Sleep measurement: %.8f\n", tdiff(start, stop));
+}
+
 int stepper_get_usdelay(int rpm, stepper_microstep ustep) {
     int rev_steps = 400;
     if(ustep == HALF_STEP) { 

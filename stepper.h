@@ -26,5 +26,6 @@ void stepper_rot(stepper_control *s, int deg, int dir, int rpm, stepper_microste
 void stepper_step(stepper_control *s, int steps, int dir, int usdelay, stepper_microstep ustep);
 int stepper_get_usdelay(int rpm, stepper_microstep ustep);
 int stepper_get_steps(int deg, stepper_microstep ustep);
+void measure_sleep();
 
 #endif

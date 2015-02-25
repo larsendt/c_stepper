@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 
 void *tstep_thread_fn(void *params);
@@ -15,6 +17,12 @@ int tstepper_init(threaded_stepper *s, stepper_control *c) {
     s->direction = 0;
     s->ustep = FULL_STEP;
     pthread_create(&(s->thread), NULL, tstep_thread_fn, s);
+    struct sched_param param;
+    param.sched_priority = 10;
+    int ok = pthread_setschedparam(s->thread, SCHED_RR, &param);
+    if(ok != 0) {
+        fprintf(stderr, "Threaded stepper failed to set scheduler priority (%s)\n", strerror(errno));
+    }
     return 0;
 }
 
@@ -23,8 +31,8 @@ void tstepper_term(threaded_stepper *s) {
 }
 
 void tstepper_rot(threaded_stepper *s, int deg, int dir, int rpm, stepper_microstep ustep) {
-    int steps = stepper_get_usdelay(rpm, ustep);
-    int usdelay = stepper_get_steps(deg, ustep);
+    int usdelay = stepper_get_usdelay(rpm, ustep);
+    int steps = stepper_get_steps(deg, ustep);
     s->steps = steps;
     s->usdelay = usdelay;
     s->direction = dir;
@@ -37,6 +45,8 @@ int tstepper_remaining_steps(threaded_stepper *s) {
 
 void *tstep_thread_fn(void *params) {
     threaded_stepper *s = params;
+    measure_sleep();
+
     while(1) {
         if(s->steps > 0) {
             int steps_to_take = 10;
@@ -44,8 +54,7 @@ void *tstep_thread_fn(void *params) {
                 steps_to_take = s->steps;
             }
             
-            //stepper_step(s->control, steps_to_take, s->dir, s->usdelay, s->ustep);
-            usleep(10000);
+            stepper_step(s->control, steps_to_take, s->direction, s->usdelay, s->ustep);
             s->steps -= steps_to_take;
         }
         else {
