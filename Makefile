@@ -1,11 +1,11 @@
 CFLAGS = -Wall -g -std=gnu99 -pthread -DSTEPPER_WARNINGS -DGPIO_WARNINGS
 CC=clang
-LIBS = -lm
+LIBS = -lm -lrt
 
 all: stepper_control 
 
 stepper_control: main.c libstepper.so
-	$(CC) $(CFLAGS) main.c -fPIC -o stepper_control $(LIBS) -lstepper
+	$(CC) $(CFLAGS) main.c -fPIC -o stepper_control $(LIBS) -L. -lstepper
 
 libstepper.so: gpio.o stepper.o threaded_stepper.o
 	$(CC) -shared gpio.o stepper.o threaded_stepper.o -o libstepper.so $(LIBS)
